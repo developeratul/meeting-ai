@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useSettings } from "@/lib/hooks/use-settings";
 import { Loader2, PlusCircle, Settings as SettingsIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { MeetingCard } from "./components/meeting-card";
 import { MeetingSettings } from "./components/meeting-settings";
 
@@ -182,9 +182,7 @@ export function MeetingHistory() {
     <div className="h-full flex flex-col">
       <div className="h-4" />
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-base font-bold text-muted-foreground uppercase tracking-wider">
-          meeting history
-        </h2>
+        <h2 className="text-xl font-bold text-black uppercase tracking-wider">meeting history</h2>
         <div className="flex gap-2">
           <Button onClick={() => setShowSettings(true)} variant="outline" size="sm">
             <SettingsIcon className="h-4 w-4" />
@@ -204,23 +202,31 @@ export function MeetingHistory() {
           {/* Show archived meetings grouped by date */}
           {Object.entries(groupMeetingsByDate(archivedMeetings)).map(([date, meetings]) => (
             <div key={date}>
-              <h3 className="text-xl font-semibold mb-3 text-muted-foreground">{date}</h3>
-              {meetings.map((meeting) => (
-                <MeetingCard
-                  key={meeting.id}
-                  meeting={meeting}
-                  settings={settings}
-                  onDelete={() => handleDelete(meeting)}
-                  onUpdate={handleUpdate}
-                  onLoadArchived={() => handleLoadArchived(meeting)}
-                />
-              ))}
+              <h3 className="text-base font-semibold mb-3 text-muted-foreground">{date}</h3>
+              <MeetingGridContainer>
+                {meetings.map((meeting) => (
+                  <MeetingCard
+                    key={meeting.id}
+                    meeting={meeting}
+                    settings={settings}
+                    onDelete={() => handleDelete(meeting)}
+                    onUpdate={handleUpdate}
+                    onLoadArchived={() => handleLoadArchived(meeting)}
+                  />
+                ))}
+              </MeetingGridContainer>
             </div>
           ))}
         </div>
       </div>
     </div>
   );
+}
+
+function MeetingGridContainer(props: { children: ReactNode }) {
+  const { children } = props;
+
+  return <div className="grid gap-5 grid-cols-3">{children}</div>;
 }
 
 function groupMeetingsByDate(meetings: LiveMeetingData[]): Record<string, LiveMeetingData[]> {
