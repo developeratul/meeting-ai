@@ -1,18 +1,18 @@
 'use client'
 
-import { useState, useEffect, useRef, useMemo, memo } from 'react'
-import { ArrowDown, ArrowLeft, List, FileText, Wand2, Sparkles, PlusCircle, ChevronDown, Mic, MicOff, CheckCircle2 } from 'lucide-react'
-import { useAutoScroll } from './hooks/auto-scroll'
-import { TextEditor } from './text-editor-within-notes-editor'
-import { Note } from '../meeting-history/types'
-import { useMeetingContext, archiveLiveMeeting } from './hooks/storage-for-live-meeting'
-import { generateMeetingName } from './hooks/ai-meeting-title'
-import { useSettings } from '@/lib/hooks/use-settings'
+import { Switch } from "@/components/ui/switch"
 import { useToast } from '@/hooks/use-toast'
+import { useSettings } from '@/lib/hooks/use-settings'
+import { ArrowDown, ArrowLeft, ChevronDown, FileText, List, PlusCircle, Sparkles, Wand2 } from 'lucide-react'
+import { useRouter } from "next/navigation"
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import { Note } from '../meeting-history/types'
 import { generateMeetingNotes } from './hooks/ai-create-all-notes'
 import { improveNote } from './hooks/ai-create-note'
-import { useRouter } from "next/navigation"
-import { Switch } from "@/components/ui/switch"
+import { generateMeetingName } from './hooks/ai-meeting-title'
+import { useAutoScroll } from './hooks/auto-scroll'
+import { archiveLiveMeeting, useMeetingContext } from './hooks/storage-for-live-meeting'
+import { TextEditor } from './text-editor-within-notes-editor'
 
 interface Props {
   onTimeClick: (timestamp: Date) => void
@@ -419,9 +419,6 @@ export const NotesEditor = memo(function NotesEditor({
                       success: archived,
                       meetingId: data.id
                     })
-                    if (!archived) {
-                      throw new Error("failed to archive meeting")
-                    }
                   }
                   router.push('/meetings')
                 } catch (error) {

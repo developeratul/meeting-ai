@@ -15,10 +15,10 @@ export async function handleStartNewMeeting(currentData?: LiveMeetingData | null
   try {
     // 1. Archive current meeting if exists and not archived
     if (currentData && !currentData.isArchived) {
-      const archived = await archiveLiveMeeting();
-      if (!archived) {
-        throw new Error("failed to archive current meeting");
-      }
+      await archiveLiveMeeting();
+      // if (!archived) {
+      //   throw new Error("failed to archive current meeting");
+      // }
     }
 
     // 2. Archive meeting if exists
