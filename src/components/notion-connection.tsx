@@ -50,6 +50,7 @@ export default function NotionConnection() {
       }
 
       await queryClient.invalidateQueries({ queryKey: ["get-notion-token"] });
+      await queryClient.refetchQueries({ queryKey: ["get-notion-token"] });
       alert("Your Notion Has been Connected Successfully");
     } catch (err) {
       if (err instanceof Error) {

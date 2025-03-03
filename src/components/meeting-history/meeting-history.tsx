@@ -140,7 +140,10 @@ export function MeetingHistory() {
           live: meetings.find((m) => !m.isArchived)?.title,
         });
 
-        setArchivedMeetings(meetings.filter((m) => m.isArchived));
+        console.log({ meetings });
+
+        // setArchivedMeetings(meetings.filter((m) => m.isArchived));
+        setArchivedMeetings(meetings);
       } catch (error) {
         console.error("failed to load meetings:", error);
       } finally {
