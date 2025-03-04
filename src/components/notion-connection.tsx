@@ -60,6 +60,7 @@ export default function NotionConnection() {
     }
   };
 
+  console.log({ data });
   if (!data) {
     return (
       <Card className="border-orange-400 bg-orange-50">

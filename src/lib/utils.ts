@@ -1,5 +1,11 @@
+import { Note } from "@/components/meeting-history/types";
+import { BlockObjectRequest } from "@notionhq/client/build/src/api-endpoints";
 import { type ClassValue, clsx } from "clsx";
+import { remark } from "remark";
+import remarkHtml from "remark-html";
+import remarkParse from "remark-parse";
 import { twMerge } from "tailwind-merge";
+import { unified } from "unified";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -56,3 +62,82 @@ export function stringToColor(str: string): string {
   }
   return color;
 }
+
+export const markdownToBlocks = async (markdown: string): Promise<BlockObjectRequest[]> => {
+  const processedContent = await remark().use(remarkHtml).process(markdown);
+  const htmlContent = processedContent.toString();
+
+  return [
+    {
+      object: "block",
+      type: "paragraph",
+      paragraph: {
+        rich_text: [
+          {
+            type: "text", // <-- Fix: This must be "text"
+            text: { content: htmlContent },
+          }, // <-- Explicitly cast it to the correct type
+        ],
+      },
+    },
+  ];
+};
+
+export const markdownToNotionBlocks = async (notes: Note[]): Promise<BlockObjectRequest[]> => {
+  const blocks: BlockObjectRequest[] = [];
+
+  for (const note of notes) {
+    const tree = unified().use(remarkParse).parse(note.text);
+
+    tree.children.forEach((node: any) => {
+      if (node.type === "paragraph") {
+        blocks.push({
+          object: "block",
+          type: "paragraph",
+          paragraph: {
+            rich_text: [
+              {
+                type: "text",
+                text: { content: node.children.map((c: any) => c.value).join("") },
+              },
+            ],
+          },
+        });
+      }
+
+      if (node.type === "heading") {
+        blocks.push({
+          object: "block",
+          type: `heading_${node.depth}`, // heading_1, heading_2, heading_3
+          [`heading_${node.depth}`]: {
+            rich_text: [
+              {
+                type: "text",
+                text: { content: node.children.map((c: any) => c.value).join("") },
+              },
+            ],
+          },
+        });
+      }
+
+      if (node.type === "list") {
+        node.children.forEach((listItem: any) => {
+          blocks.push({
+            object: "block",
+            type: "bulleted_list_item",
+            bulleted_list_item: {
+              rich_text: [
+                {
+                  type: "text",
+                  text: { content: listItem.children.map((c: any) => c.value).join("") },
+                },
+              ],
+            },
+          });
+        });
+      }
+    });
+  }
+
+  return blocks;
+};
