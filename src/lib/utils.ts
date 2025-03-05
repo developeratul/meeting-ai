@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Note } from "@/components/meeting-history/types";
 import { BlockObjectRequest } from "@notionhq/client/build/src/api-endpoints";
 import { type ClassValue, clsx } from "clsx";
@@ -108,7 +109,7 @@ export const markdownToNotionBlocks = async (notes: Note[]): Promise<BlockObject
       if (node.type === "heading") {
         blocks.push({
           object: "block",
-          type: `heading_${node.depth}`, // heading_1, heading_2, heading_3
+          type: `heading_${node.depth}` as any, // heading_1, heading_2, heading_3
           [`heading_${node.depth}`]: {
             rich_text: [
               {
@@ -117,7 +118,7 @@ export const markdownToNotionBlocks = async (notes: Note[]): Promise<BlockObject
               },
             ],
           },
-        });
+        } as any);
       }
 
       if (node.type === "list") {
